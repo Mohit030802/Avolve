@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+pydantic-settings
+PyYAML
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+# SQLAlchemy (for future use with pgvector)
+sqlalchemy[asyncio]
+sqlmodel
+psycopg2-binary
+docling
+langchain-google-genai
+google-generativeai
