@@ -1,14 +1,28 @@
 import os
 import uvicorn
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from app.api.v1.api import api_router
 from app.core.config import settings
 from app.core.security import create_access_token
+from app.core.database import init_db
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Context manager for application lifespan events.
+    """
+    # 1. Initialize database tables
+    await init_db()
+    
+    yield
+    # Cleanup logic (if any) goes here
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    lifespan=lifespan
 )
 
 # Set Hugging Face environment variables for Docling

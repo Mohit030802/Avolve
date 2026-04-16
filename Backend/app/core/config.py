@@ -40,6 +40,30 @@ class Settings(BaseSettings):
         return self.secrets.get("app", {}).get("HF_TOKEN", "")
 
     @property
+    def db_user(self) -> str:
+        return self.secrets.get("app", {}).get("db_user", "postgres")
+
+    @property
+    def db_password(self) -> str:
+        return self.secrets.get("app", {}).get("db_password", "")
+
+    @property
+    def db_host(self) -> str:
+        return self.secrets.get("app", {}).get("db_host", "localhost")
+
+    @property
+    def db_port(self) -> int:
+        return self.secrets.get("app", {}).get("db_port", 5432)
+
+    @property
+    def db_name(self) -> str:
+        return self.secrets.get("app", {}).get("db_name", "Avolve")
+
+    @property
+    def database_url(self) -> str:
+        return f"postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
+
+    @property
     def hf_hub_disable_symlinks_warning(self) -> str:
         return "1"
 
