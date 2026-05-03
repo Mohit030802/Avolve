@@ -1,6 +1,22 @@
 -- Schema for Avolve Backend
 -- Database: Avolve
 
+-- Users Table
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT UNIQUE NOT NULL,
+    username TEXT UNIQUE NOT NULL,
+    hashed_password TEXT NOT NULL,
+    full_name TEXT,
+    role TEXT NOT NULL DEFAULT 'user',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS ix_users_id ON users (id);
+CREATE INDEX IF NOT EXISTS ix_users_email ON users (email);
+CREATE INDEX IF NOT EXISTS ix_users_username ON users (username);
+
 -- Resume Table
 CREATE TABLE IF NOT EXISTS resume (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

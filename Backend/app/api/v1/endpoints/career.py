@@ -8,7 +8,9 @@ from app.core.security import get_current_user
 from app.core.logger import logger
 from app.models.resume import Resume
 from app.models.career import CareerAnalysis
+from app.models.user import User
 from app.schemas.career_schema import CareerAnalysisRequest, CareerAnalysisResponse
+
 from app.agents.graph import career_agent_graph
 
 router = APIRouter()
@@ -17,7 +19,7 @@ router = APIRouter()
 async def analyze_career_gap(
     resume_id: uuid.UUID,
     request: CareerAnalysisRequest = None,
-    current_user: dict = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_session)
 ):
     """
@@ -37,7 +39,7 @@ async def analyze_career_gap(
         raise HTTPException(status_code=404, detail="Resume not found")
         
     # Ensure the user owns this resume
-    if resume.user_id != current_user["id"]:
+    if resume.user_id != str(current_user.id):
         raise HTTPException(status_code=403, detail="Not authorized to access this resume")
         
     # 2. Prepare the initial state for LangGraph
@@ -66,7 +68,7 @@ async def analyze_career_gap(
         # 4. Save to Database
         db_career_analysis = CareerAnalysis(
             resume_id=resume.id,
-            user_id=current_user["id"],
+            user_id=str(current_user.id),
             target_role=role_targeted,
             duration_weeks=final_state["duration_weeks"],
             analysis_data={

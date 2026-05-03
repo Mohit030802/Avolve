@@ -37,21 +37,7 @@ if settings.langchain_api_key:
     os.environ["LANGCHAIN_PROJECT"] = settings.langchain_project
     print(f"INFO: LangSmith tracing enabled for project '{settings.langchain_project}'")
 
-# Mock login for demonstration
-@app.post(f"{settings.API_V1_STR}/login/access-token")
-async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    """
-    Mock login to get access token.
-    Default: admin/admin
-    """
-    if form_data.username == "admin" and form_data.password == "admin":
-        access_token = create_access_token(subject=form_data.username)
-        return {"access_token": access_token, "token_type": "bearer"}
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-        )
+# End of setup
 
 # Main router inclusion
 app.include_router(api_router, prefix=settings.API_V1_STR)

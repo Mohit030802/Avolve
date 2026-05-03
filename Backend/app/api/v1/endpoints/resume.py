@@ -10,14 +10,16 @@ from app.core.logger import logger
 from app.core.security import get_current_user
 from app.core.database import get_session
 from app.models.resume import Resume
+from app.models.user import User
 from app.schemas.resume_schema import ResumeSchema
+
 
 router = APIRouter()
 
 @router.post("/upload", response_model=ResumeSchema)
 async def upload_resume(
     file: UploadFile = File(...),
-    current_user: dict = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_session)
 ):
     """
@@ -26,7 +28,7 @@ async def upload_resume(
     """
     logger.log("API.upload_resume", "RECEIVED", {
         "filename": file.filename, 
-        "user_id": current_user["id"]
+        "user_id": str(current_user.id)
     })
     
     ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt", ".md", ".html"}
@@ -54,7 +56,7 @@ async def upload_resume(
             filename=file.filename,
             raw_markdown=markdown_text,
             structured_data=structured_data.model_dump(),
-            user_id=current_user["id"]
+            user_id=str(current_user.id)
         )
         
         db.add(db_resume)
