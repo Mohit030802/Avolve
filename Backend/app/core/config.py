@@ -64,6 +64,14 @@ class Settings(BaseSettings):
         return f"postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
 
     @property
+    def langchain_api_key(self) -> str:
+        return self.secrets.get("app", {}).get("langchain_api_key", "")
+
+    @property
+    def langchain_project(self) -> str:
+        return self.secrets.get("app", {}).get("langchain_project", "Avolve-Agents")
+
+    @property
     def hf_hub_disable_symlinks_warning(self) -> str:
         return "1"
 

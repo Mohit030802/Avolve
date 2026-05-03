@@ -30,6 +30,13 @@ if settings.hf_token:
     os.environ["HF_TOKEN"] = settings.hf_token
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = settings.hf_hub_disable_symlinks_warning
 
+# Enable LangSmith Tracing if API Key is configured
+if settings.langchain_api_key:
+    os.environ["LANGCHAIN_TRACING_V2"] = "true"
+    os.environ["LANGCHAIN_API_KEY"] = settings.langchain_api_key
+    os.environ["LANGCHAIN_PROJECT"] = settings.langchain_project
+    print(f"INFO: LangSmith tracing enabled for project '{settings.langchain_project}'")
+
 # Mock login for demonstration
 @app.post(f"{settings.API_V1_STR}/login/access-token")
 async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()):

@@ -29,20 +29,22 @@ async def upload_resume(
         "user_id": current_user["id"]
     })
     
-    if not file.filename.endswith(".pdf"):
-        logger.log("API.upload_resume", "REJECTED", {"reason": "Not a PDF"})
-        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+    ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt", ".md", ".html"}
+    ext = Path(file.filename).suffix.lower()
+    
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail=f"Unsupported file type. Allowed: {', '.join(ALLOWED_EXTENSIONS)}")
 
     # Create a temporary file to store the upload
     try:
-        with NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        with NamedTemporaryFile(delete=False, suffix=ext) as tmp:
             shutil.copyfileobj(file.file, tmp)
             tmp_path = Path(tmp.name)
             
         logger.log("API.upload_resume", "SAVED_TEMP", {"path": str(tmp_path)})
         
-        # 1. Parse with Docling
-        markdown_text = parser_service.parse_pdf(tmp_path)
+        # 1. Parse with MCP Server
+        markdown_text = await parser_service.parse_document(tmp_path)
         
         # 2. Extract with LLM (Gemini)
         structured_data = llm_service.extract_structured_data(markdown_text)
